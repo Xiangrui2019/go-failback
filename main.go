@@ -18,6 +18,12 @@ func main() {
 	})
 	ctx := context.Background()
 
+	err := client.Ping(ctx)
+
+	if err != nil {
+		panic(err)
+	}
+
 	app.GET("/", func(context *gin.Context) {
 		err := limiterservice.Limiter(ctx, client, context.ClientIP(), 2, 10)
 
@@ -37,7 +43,7 @@ func main() {
 		Handler: app,
 	}
 
-	err := http.ListenAndServe()
+	err = http.ListenAndServe()
 
 	if err != nil {
 		panic(err)
