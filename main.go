@@ -10,9 +10,10 @@ import (
 
 func main() {
 	app := gin.Default()
+
 	client := redis.New(redis.Options{
 		Address: os.Getenv("REDIS_HOST"),
-		PoolSize: 1,
+		PoolSize: 10,
 	})
 	ctx := context.Background()
 
