@@ -9,10 +9,7 @@ import (
 	"strconv"
 )
 
-const IPMAXConnection = 2
-const Secound = 1
-
-func limiter(client redis.Conn, id string) error {
+func limiter(client redis.Conn, id string, limit int64, duration int64) error {
 	var sum int64
 	var err error
 
@@ -25,7 +22,7 @@ func limiter(client redis.Conn, id string) error {
 			return err
 		}
 
-		_, err = client.Do("EXPIRE", id, 5)
+		_, err = client.Do("EXPIRE", id, duration)
 
 		if err != nil {
 			return err
@@ -36,7 +33,7 @@ func limiter(client redis.Conn, id string) error {
 		if err != nil {
 			return err
 		}
-		if sum >= 2 {
+		if sum >= limit {
 			return errors.New("limit too big.")
 		} else {
 			sum, err = redis.Int64(client.Do("INCR", id))
@@ -54,7 +51,7 @@ func main() {
 	client, _ := redis.Dial("tcp", os.Getenv("REDIS_HOST"))
 
 	app.GET("/", func(context *gin.Context) {
-		err := limiter(client, context.ClientIP())
+		err := limiter(client, context.ClientIP(), 2, 10)
 
 		if err != nil {
 			context.Status(409)
