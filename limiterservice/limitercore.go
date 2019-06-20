@@ -1,4 +1,4 @@
-package main
+package limiterservice
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func limiter(ctx context.Context, client redis.Client, id string, limit int64, duration int32) error {
+func Limiter(ctx context.Context, client redis.Client, id string, limit int64, duration int32) error {
 	var sum int64
 	var err error
 
