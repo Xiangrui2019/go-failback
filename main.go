@@ -12,7 +12,7 @@ import (
 const IPMAXConnection = 2
 const Secound = 1
 
-func limiter(id string, client redis.Conn) error {
+func limiter(client redis.Conn, id string) error {
 	var sum int64
 	var err error
 
@@ -54,12 +54,10 @@ func main() {
 	client, _ := redis.Dial("tcp", os.Getenv("REDIS_HOST"))
 
 	app.GET("/", func(context *gin.Context) {
-		ip := context.ClientIP()
-
-		err := limiter(ip, client)
+		err := limiter(client, context.ClientIP())
 
 		if err != nil {
-			context.Status(404)
+			context.Status(409)
 			return
 		}
 
