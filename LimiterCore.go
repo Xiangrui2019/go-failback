@@ -1,16 +1,22 @@
 package main
 
 import (
+	"context"
 	"errors"
-	"github.com/garyburd/redigo/redis"
+	"github.com/xiangrui2019/redis"
 	"strconv"
 )
 
-func limiter(client redis.Conn, id string, limit int64, duration int64) error {
+func limiter(ctx context.Context, client redis.Client, id string, limit int64, duration int64) error {
 	var sum int64
 	var err error
 
-	data, _ := redis.String(client.Do("GET", id))
+	data, err := client.Get(ctx, id)
+
+	if err != nil {
+		sum = 1
+		client.Set(ctx, redis.Item{})
+	}
 
 	if data == "" {
 		sum, err = redis.Int64(client.Do("INCR", id))
