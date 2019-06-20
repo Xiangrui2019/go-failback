@@ -11,10 +11,10 @@ func LimiterMiddleware(ctx context.Context, client redis.Client, limit int64, du
 		err := Limiter(ctx, client, context.ClientIP(), limit, duration)
 
 		if err != nil {
-			context.Status(400)
+			context.AbortWithStatus(400)
 			return
+		} else {
+			context.Next()
 		}
-
-		context.Next()
 	}
 }
