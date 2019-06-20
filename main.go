@@ -26,7 +26,10 @@ func main() {
 			return
 		}
 
-		context.String(200, "limit")
+		context.JSON(200, gin.H{
+			"code": 0,
+			"message": "OK.",
+		})
 	})
 
 	http := http.Server{
