@@ -8,6 +8,8 @@ import (
 	"strconv"
 )
 
+// Limiter(上下文对象, redis客户端, 唯一标示为一个id, 单次duration下和单个id下可以进入的次数, 时间)
+
 func Limiter(ctx context.Context, client redis.Client, id string, limit int64, duration int32) error {
 	var sum int64
 	var err error
