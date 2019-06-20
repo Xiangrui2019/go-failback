@@ -12,5 +12,6 @@
 *.out
 .DS_Store
 go.sum
-.idea
-.vscode
+.idea/
+.vscode/
+vendor/
