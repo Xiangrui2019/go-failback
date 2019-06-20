@@ -1,4 +1,4 @@
-package main
+package limiterservice
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 func LimiterMiddleware(ctx context.Context, client redis.Client, limit int64, duration int32) func(context *gin.Context) {
 	return func(context *gin.Context) {
-		err := limiter(ctx, client, context.ClientIP(), limit, duration)
+		err := Limiter(ctx, client, context.ClientIP(), limit, duration)
 
 		if err != nil {
 			context.Status(400)

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/xiangrui2019/go-failback/limiterservice"
 	"github.com/xiangrui2019/redis"
 	"net/http"
 	"os"
@@ -18,7 +19,7 @@ func main() {
 	ctx := context.Background()
 
 	app.GET("/", func(context *gin.Context) {
-		err := limiter(ctx, client, context.ClientIP(), 2, 10)
+		err := limiterservice.Limiter(ctx, client, context.ClientIP(), 2, 10)
 
 		if err != nil {
 			context.Status(400)
