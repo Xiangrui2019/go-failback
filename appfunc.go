@@ -15,7 +15,7 @@ func main() {
 		err := limiter(client, context.ClientIP(), 2, 10)
 
 		if err != nil {
-			context.Status(409)
+			context.Status(400)
 			return
 		}
 
