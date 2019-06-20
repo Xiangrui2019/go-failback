@@ -1,18 +1,23 @@
 package main
 
 import (
-	"github.com/garyburd/redigo/redis"
+	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/xiangrui2019/redis"
 	"net/http"
 	"os"
 )
 
 func main() {
 	app := gin.Default()
-	client, _ := redis.Dial("tcp", os.Getenv("REDIS_HOST"))
+	client := redis.New(redis.Options{
+		Address: os.Getenv("REDIS_HOST"),
+		PoolSize: 1,
+	})
+	ctx := context.Background()
 
 	app.GET("/", func(context *gin.Context) {
-		err := limiter(client, context.ClientIP(), 2, 10)
+		err := limiter(ctx, client, context.ClientIP(), 2, 10)
 
 		if err != nil {
 			context.Status(400)

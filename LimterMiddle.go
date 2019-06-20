@@ -1,16 +1,17 @@
 package main
 
 import (
-	"github.com/garyburd/redigo/redis"
+	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/xiangrui2019/redis"
 )
 
-func LimiterMiddleware(client redis.Conn, limit int64, duration int64) func(context *gin.Context) {
+func LimiterMiddleware(ctx context.Context, client redis.Client, limit int64, duration int32) func(context *gin.Context) {
 	return func(context *gin.Context) {
-		err := limiter(client, context.ClientIP(), limit, duration)
+		err := limiter(ctx, client, context.ClientIP(), limit, duration)
 
 		if err != nil {
-			context.Status(404)
+			context.Status(400)
 			return
 		}
 
