@@ -12,7 +12,7 @@ import (
 const IPMAXConnection = 2
 const Secound = 1
 
-func limiter(id string, client redis.Conn) (int64, error) {
+func limiter(id string, client redis.Conn) error {
 	var sum int64
 	var err error
 
@@ -20,21 +20,24 @@ func limiter(id string, client redis.Conn) (int64, error) {
 
 	if data == "" {
 		sum, err = redis.Int64(client.Do("INCR", id))
+
 		if err != nil {
-			return 0, err
+			return err
 		}
-		_, err = client.Do("EXPIRE", id, 1)
+
+		_, err = client.Do("EXPIRE", id, 5)
+
 		if err != nil {
-			return 0, err
+			return err
 		}
 
 	} else {
 		sum, err = strconv.ParseInt(data, 10, 0)
 		if err != nil {
-			return 0, err
+			return err
 		}
-		if sum > 2 {
-			return 0, errors.New("limit too big.")
+		if sum >= 2 {
+			return errors.New("limit too big.")
 		} else {
 			sum, err = redis.Int64(client.Do("INCR", id))
 			if err != nil {
@@ -43,7 +46,7 @@ func limiter(id string, client redis.Conn) (int64, error) {
 		}
 	}
 
-	return sum, nil
+	return nil
 }
 
 func main() {
@@ -53,7 +56,7 @@ func main() {
 	app.GET("/", func(context *gin.Context) {
 		ip := context.ClientIP()
 
-		_, err := limiter(ip, client)
+		err := limiter(ip, client)
 
 		if err != nil {
 			context.Status(404)
